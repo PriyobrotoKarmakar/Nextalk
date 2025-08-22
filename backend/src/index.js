@@ -18,6 +18,9 @@ app.use(
     credentials: true,
   })
 );
+app.get("/", (req, res) => {
+  res.json("HELLO From Backend");
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 const PORT = process.env.PORT;
