@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { MessageSquare } from "lucide-react";
@@ -16,7 +16,10 @@ const SignUpPage = () => {
     confirmPassword: "",
   });
 
-  const { signUp, isSigningUp } = useAuthStore();
+  const { signUp, isSigningUp, authUser } = useAuthStore();
+  if (authUser) {
+    return <Navigate to="/" />;
+  }
   const validateForm = () => {
     if (!formData.fullName.trim()) return toast.error("Full name is required");
     if (!formData.email.trim()) return toast.error("Email is required");
