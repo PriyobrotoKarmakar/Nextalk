@@ -3,7 +3,7 @@ import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { Socket, io } from "socket.io-client";
 const baseUrl =
-  import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
+  import.meta.env.MODE === "development" ? "http://localhost:5001" : "https://nextalk-chat-backend.vercel.app";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
