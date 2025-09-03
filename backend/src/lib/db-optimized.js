@@ -13,11 +13,8 @@ export const connectDB = async () => {
 
   if (!cached.promise) {
     const opts = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 45000,
-      bufferMaxEntries: 0,
       maxPoolSize: 10,
       minPoolSize: 5,
     };

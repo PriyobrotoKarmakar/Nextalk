@@ -34,6 +34,7 @@ app.get("/health", async (req, res) => {
       3: "disconnecting"
     };
     
+    
     res.json({
       status: "OK",
       database: dbStates[dbStatus],
