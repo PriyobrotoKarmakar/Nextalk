@@ -47,16 +47,35 @@ app.get("/health", async (req, res) => {
     });
   }
 });
-app.use("/api/auth", authRoutes);
-app.use("/api/messages", messageRoutes);
+
+// Database connection check middleware
+const checkDbConnection = (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ 
+      message: "Database connection not ready",
+      status: mongoose.connection.readyState 
+    });
+  }
+  next();
+};
+
+app.use("/api/auth", checkDbConnection, authRoutes);
+app.use("/api/messages", checkDbConnection, messageRoutes);
 const PORT = process.env.PORT || 5001;
-server.listen(PORT, async () => {
-  console.log(`Server is running on port ${PORT}`);
+
+// Connect to database before starting server
+const startServer = async () => {
   try {
     await connectDB();
     console.log("Database connected successfully");
+    
+    server.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
   } catch (error) {
-    console.error("Failed to connect to database:", error);
+    console.error("Failed to start server:", error);
     process.exit(1);
   }
-});
+};
+
+startServer();
