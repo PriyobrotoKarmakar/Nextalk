@@ -20,6 +20,8 @@ export const useAuthStore = create((set, get) => ({
       set({
         authUser: res.data,
       });
+      // Connect to socket if user is authenticated
+      get().connectSocket();
     } catch (error) {
       console.error("Error checking authentication:", error);
       set({
@@ -98,17 +100,35 @@ export const useAuthStore = create((set, get) => ({
   },
   connectSocket: () => {
     const { authUser } = get();
+    // Don't proceed if no user or socket already connected
     if (!authUser || get().Socket?.connected) return;
+    
+    console.log("Connecting socket for user:", authUser._id);
     const socket = io(baseUrl, {
       query: { userId: authUser._id },
       transports: ["websocket"],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
-    socket.connect();
-    set({ Socket: socket });
-
+    
+    // Set up socket event handlers
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+      set({ Socket: socket });
+    });
+    
+    socket.on("connect_error", (err) => {
+      console.error("Socket connection error:", err.message);
+    });
+    
     socket.on("getOnlineUsers", (onlineUsersIds) => {
       set({ onlineUsers: onlineUsersIds });
     });
+    
+    // Attempt to connect
+    socket.connect();
+    set({ Socket: socket });
   },
   disconnectSocket: () => {
     const { Socket } = get();
