@@ -9,6 +9,7 @@ const io = new Server(server, {
     origin: ["http://localhost:5173", "https://nextalk-chat.vercel.app"],
     methods: ["GET", "POST"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   },
 });
 

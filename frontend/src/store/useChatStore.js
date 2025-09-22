@@ -53,16 +53,27 @@ export const useChatStore = create((set, get) => ({
     const socket = useAuthStore.getState().Socket;
     if (!socket) {
       console.error("Socket is null! Trying to reconnect...");
+      // Show detailed info for debugging
+      console.log("Auth state:", { 
+        user: useAuthStore.getState().authUser ? "logged in" : "not logged in",
+        baseUrl: baseUrl
+      });
+      
       // Attempt to reconnect the socket
       useAuthStore.getState().connectSocket();
+      
       // Retry after a short delay if user is authenticated
       if (useAuthStore.getState().authUser) {
         setTimeout(() => {
           get().subscribeToMessages();
-        }, 1000);
+        }, 2000);
       }
       return;
     }
+    
+    // Debug socket state
+    console.log("Socket connected:", socket.connected);
+    
     socket.on("newMessage", (newMessage) => {
       //optimise
       const isMessageSentFromSelectedUser = newMessage.senderId === selectedUser._id;

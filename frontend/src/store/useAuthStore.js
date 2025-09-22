@@ -3,7 +3,7 @@ import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { Socket, io } from "socket.io-client";
 const baseUrl =
-  import.meta.env.MODE === "development" ? "http://localhost:5001" : "https://nextalk-chat-backend.vercel.app";
+  import.meta.env.MODE === "development" ? "http://localhost:5001" : "https://nextalk-backend-43hu.onrender.com";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -104,31 +104,37 @@ export const useAuthStore = create((set, get) => ({
     if (!authUser || get().Socket?.connected) return;
     
     console.log("Connecting socket for user:", authUser._id);
-    const socket = io(baseUrl, {
-      query: { userId: authUser._id },
-      transports: ["websocket"],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
     
-    // Set up socket event handlers
-    socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
+    // Add a small delay to ensure authentication is fully processed
+    setTimeout(() => {
+      const socket = io(baseUrl, {
+        query: { userId: authUser._id },
+        transports: ["websocket", "polling"], // Allow fallback to polling if WebSocket fails
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+      });
+      
+      // Set up socket event handlers
+      socket.on("connect", () => {
+        console.log("Socket connected:", socket.id);
+        set({ Socket: socket });
+      });
+      
+      socket.on("connect_error", (err) => {
+        console.error("Socket connection error:", err.message);
+        // Try to reconnect after error
+        setTimeout(() => get().connectSocket(), 3000);
+      });
+      
+      socket.on("getOnlineUsers", (onlineUsersIds) => {
+        set({ onlineUsers: onlineUsersIds });
+      });
+      
+      // Attempt to connect
+      socket.connect();
       set({ Socket: socket });
-    });
-    
-    socket.on("connect_error", (err) => {
-      console.error("Socket connection error:", err.message);
-    });
-    
-    socket.on("getOnlineUsers", (onlineUsersIds) => {
-      set({ onlineUsers: onlineUsersIds });
-    });
-    
-    // Attempt to connect
-    socket.connect();
-    set({ Socket: socket });
+    }, 500);
   },
   disconnectSocket: () => {
     const { Socket } = get();
