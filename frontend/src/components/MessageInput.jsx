@@ -64,10 +64,10 @@ const MessageInput = () => {
         </div>
       )}
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-        <div className="flex-1 flex  gap-2">
+        <div className="flex items-center gap-2 w-full">
           <input
             type="text"
-            className="w-full input input-bordered rounded-lg input-sm sm:input-md"
+            className="flex-1 input input-bordered rounded-lg input-sm sm:input-md focus:outline-none focus:bg-base-200"
             placeholder="Type a message..."
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -82,21 +82,21 @@ const MessageInput = () => {
 
           <button
             type="button"
-            className={`hidden sm:flex btn btn-circle
+            className={`btn btn-circle btn-sm flex-shrink-0 cursor-pointer hover:bg-base-300
                      ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
             onClick={() => fileInputRef.current?.click()}
           >
-            {" "}
-            <Image size={20} />
+            <Image size={18} />
+          </button>
+          
+          <button
+            type="submit"
+            className="btn btn-sm btn-circle flex-shrink-0 cursor-pointer hover:bg-base-300"
+            disabled={!text.trim() && !imagePreview}
+          >
+            <Send size={18} className={`${(!text.trim() && !imagePreview) ? 'text-zinc-600' : 'text-zinc-400'}`} />
           </button>
         </div>
-        <button
-          type="submit"
-          className="btn btn-sm btn-circle"
-          disabled={!text.trim() && !imagePreview}
-        >
-          <Send size={22} />
-        </button>
       </form>
     </div>
   );

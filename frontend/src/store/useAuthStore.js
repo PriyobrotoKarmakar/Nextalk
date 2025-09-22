@@ -103,8 +103,6 @@ export const useAuthStore = create((set, get) => ({
     // Don't proceed if no user or socket already connected
     if (!authUser || get().Socket?.connected) return;
     
-    console.log("Connecting socket for user:", authUser._id);
-    
     // Add a small delay to ensure authentication is fully processed
     setTimeout(() => {
       const socket = io(baseUrl, {
@@ -117,12 +115,10 @@ export const useAuthStore = create((set, get) => ({
       
       // Set up socket event handlers
       socket.on("connect", () => {
-        console.log("Socket connected:", socket.id);
         set({ Socket: socket });
       });
       
-      socket.on("connect_error", (err) => {
-        console.error("Socket connection error:", err.message);
+      socket.on("connect_error", () => {
         // Try to reconnect after error
         setTimeout(() => get().connectSocket(), 3000);
       });

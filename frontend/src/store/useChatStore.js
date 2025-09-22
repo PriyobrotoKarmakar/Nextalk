@@ -52,13 +52,6 @@ export const useChatStore = create((set, get) => ({
 
     const socket = useAuthStore.getState().Socket;
     if (!socket) {
-      console.error("Socket is null! Trying to reconnect...");
-      // Show detailed info for debugging
-      console.log("Auth state:", { 
-        user: useAuthStore.getState().authUser ? "logged in" : "not logged in",
-        baseUrl: baseUrl
-      });
-      
       // Attempt to reconnect the socket
       useAuthStore.getState().connectSocket();
       
@@ -70,9 +63,6 @@ export const useChatStore = create((set, get) => ({
       }
       return;
     }
-    
-    // Debug socket state
-    console.log("Socket connected:", socket.connected);
     
     socket.on("newMessage", (newMessage) => {
       //optimise
@@ -88,7 +78,6 @@ export const useChatStore = create((set, get) => ({
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().Socket;
     if (!socket) {
-      console.error("Socket is null when trying to unsubscribe!");
       return;
     }
     socket.off("newMessage");
