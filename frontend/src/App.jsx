@@ -9,12 +9,21 @@ import ProfilePage from "./pages/ProfilePage";
 import { useAuthStore } from "./store/useAuthStore";
 import { Loader } from "lucide-react";
 import { Navigate } from "react-router-dom";
-import {Toaster} from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { useThemeStore } from "./store/useThemeStore";
 
 const App = () => {
-  const { authUser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore();
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   const { theme } = useThemeStore();
+
+  React.useEffect(() => {
+    // Apply theme to html element for Tailwind dark mode
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]);
 
   React.useEffect(() => {
     checkAuth();
@@ -27,7 +36,7 @@ const App = () => {
       </div>
     );
   return (
-    <div data-theme={theme}>
+    <div>
       <Navbar />
       <Routes>
         <Route
@@ -42,16 +51,12 @@ const App = () => {
           path="/login"
           element={!authUser ? <LoginPage /> : <Navigate to="/" />}
         />
-        <Route
-          path="/settings"
-          element={<SettingsPage />}
-        />
+        <Route path="/settings" element={<SettingsPage />} />
         <Route
           path="/profile"
           element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
         />
       </Routes>
-
 
       <Toaster />
     </div>

@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
-import { Users } from "lucide-react";
 
 const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } =
     useChatStore();
-
   const { onlineUsers } = useAuthStore();
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
@@ -16,79 +14,73 @@ const Sidebar = () => {
   }, [getUsers]);
 
   const filteredUsers = showOnlineOnly
-    ? users.filter((user) => onlineUsers.includes(user._id))
+    ? users.filter((u) => onlineUsers.includes(u._id))
     : users;
 
   if (isUsersLoading) return <SidebarSkeleton />;
 
   return (
-    <aside className="h-full w-20 lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200">
-      <div className="border-b border-base-300 w-full p-5">
-        <div className="flex items-center gap-2">
-          <Users className="size-6" />
-          <span className="font-medium hidden lg:block">Contacts</span>
-        </div>
-        {/* TODO: Online filter toggle */}
-        <div className="mt-3 hidden lg:flex items-center gap-2">
-          <label className="cursor-pointer flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={showOnlineOnly}
-              onChange={(e) => setShowOnlineOnly(e.target.checked)}
-              className="checkbox checkbox-sm"
-            />
-            <span className="text-sm">Show online only</span>
+    <aside className="h-full w-20 lg:w-72 border-r border-gray-100 dark:border-white/10 flex flex-col bg-[#F9F9F9] dark:bg-black transition-all">
+      <div className="p-5 space-y-4">
+        <h2 className="text-xl font-extrabold tracking-tight hidden lg:block">
+          Messages
+        </h2>
+        <div className="flex items-center justify-between">
+          <label className="flex items-center gap-2 cursor-pointer group">
+            <div
+              onClick={() => setShowOnlineOnly(!showOnlineOnly)}
+              className={`w-8 h-4.5 rounded-full relative transition-colors duration-200 ${showOnlineOnly ? "bg-[#34C759]" : "bg-gray-300 dark:bg-gray-700"}`}
+            >
+              <div
+                className={`absolute top-0.5 left-0.5 size-3.5 bg-white rounded-full transition-transform duration-200 shadow-sm ${showOnlineOnly ? "translate-x-3.5" : ""}`}
+              />
+            </div>
+            <span className="text-[13px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white">
+              Online
+            </span>
           </label>
-          <span className="text-xs text-zinc-500">
-            ({onlineUsers.length - 1} online)
+          <span className="text-[10px] font-bold text-gray-400 px-2 py-0.5 bg-gray-100 dark:bg-gray-900 rounded-full">
+            {onlineUsers.length - 1} online
           </span>
         </div>
       </div>
 
-      <div className="overflow-y-auto w-full py-3">
+      <div className="overflow-y-auto flex-1 pb-4 custom-scrollbar">
         {filteredUsers.map((user) => (
           <button
             key={user._id}
             onClick={() => setSelectedUser(user)}
-            className={`
-              w-full p-3 flex items-center gap-3
-              hover:bg-base-300 transition-colors
-              ${
-                selectedUser?._id === user._id
-                  ? "bg-base-300 ring-1 ring-base-300"
-                  : ""
-              }
-            `}
+            className={`w-full px-4 py-3 flex items-center gap-3 transition-all relative
+              ${selectedUser?._id === user._id ? "bg-white dark:bg-[#1C1C1E] shadow-sm z-10" : "hover:bg-gray-200/50 dark:hover:bg-white/5"}`}
           >
-            <div className="relative mx-auto lg:mx-0">
+            {/* Active Indicator Line */}
+            {selectedUser?._id === user._id && (
+              <div className="absolute left-0 w-1 h-8 bg-[#007AFF] rounded-r-full" />
+            )}
+
+            <div className="relative">
               <img
                 src={user.profilePic || "/avatar.png"}
-                alt={user.name}
-                className="size-12 object-cover rounded-full"
+                className="size-11 object-cover rounded-full"
               />
               {onlineUsers.includes(user._id) && (
-                <span
-                  className="absolute bottom-0 right-0 size-3 bg-green-500 
-                  rounded-full ring-2 ring-zinc-900"
-                />
+                <span className="absolute bottom-0 right-0 size-3 bg-[#34C759] rounded-full ring-2 ring-white dark:ring-[#1C1C1E]" />
               )}
             </div>
 
-            {/* User info - only visible on larger screens */}
-            <div className="hidden lg:block text-left min-w-0">
-              <div className="font-medium truncate">{user.fullName}</div>
-              <div className="text-sm text-zinc-400">
-                {onlineUsers.includes(user._id) ? "Online" : "Offline"}
+            <div className="hidden lg:block text-left flex-1 min-w-0">
+              <div className="font-bold text-[15px] truncate text-gray-900 dark:text-gray-100 leading-tight">
+                {user.fullName}
+              </div>
+              <div className="text-[13px] text-gray-500 truncate font-medium">
+                Click to chat
               </div>
             </div>
           </button>
         ))}
-
-        {filteredUsers.length === 0 && (
-          <div className="text-center text-zinc-500 py-4">No online users</div>
-        )}
       </div>
     </aside>
   );
 };
+
 export default Sidebar;

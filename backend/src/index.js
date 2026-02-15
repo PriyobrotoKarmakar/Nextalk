@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["https://nextalk-chat.vercel.app", "http://localhost:5173"],
+    origin: ["https://nextalk-chat.vercel.app", "http://localhost:5173", "http://localhost:5174"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
