@@ -15,11 +15,20 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["https://nextalk-chat.vercel.app", "http://localhost:5173", "http://localhost:5174"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: [
+      "https://nextalk-chat.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:5174",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+    ],
+  }),
 );
 app.get("/", (req, res) => {
   res.json("HELLO From Backend");
@@ -34,9 +43,9 @@ app.use("/health", healthRoutes);
 // Database connection check middleware
 const checkDbConnection = (req, res, next) => {
   if (mongoose.connection.readyState !== 1) {
-    return res.status(503).json({ 
+    return res.status(503).json({
       message: "Database connection not ready",
-      status: mongoose.connection.readyState 
+      status: mongoose.connection.readyState,
     });
   }
   next();
@@ -50,10 +59,10 @@ const PORT = process.env.PORT || 5001;
 const startServer = async () => {
   try {
     await connectDB();
-    console.log("Database connected successfully");
-    
+    // console.log("Database connected successfully");
+
     server.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+      // console.log(`Server is running on port ${PORT}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);

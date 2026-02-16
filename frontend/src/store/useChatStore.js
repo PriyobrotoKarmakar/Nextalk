@@ -38,11 +38,34 @@ export const useChatStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post(
         `/messages/send/${selectedUser._id}`,
-        messageData
+        messageData,
       );
       set({ messages: [...messages, res.data] });
     } catch (error) {
       toast.error(error.response.data.message);
+    }
+  },
+
+  rewriteText: async (text, tone) => {
+    try {
+      const res = await axiosInstance.post("/messages/rewrite", { text, tone });
+      return res.data.rewrittenText;
+    } catch {
+      toast.error("Failed to rewrite message");
+      return text; // Return original text on failure
+    }
+  },
+
+  translateMessage: async (text, language) => {
+    try {
+      const res = await axiosInstance.post("/messages/translate", {
+        text,
+        language,
+      });
+      return res.data.translatedText;
+    } catch {
+      toast.error("Failed to translate message");
+      return text; // Return original text on failure
     }
   },
 
@@ -54,7 +77,7 @@ export const useChatStore = create((set, get) => ({
     if (!socket) {
       // Attempt to reconnect the socket
       useAuthStore.getState().connectSocket();
-      
+
       // Retry after a short delay if user is authenticated
       if (useAuthStore.getState().authUser) {
         setTimeout(() => {
@@ -63,10 +86,11 @@ export const useChatStore = create((set, get) => ({
       }
       return;
     }
-    
+
     socket.on("newMessage", (newMessage) => {
       //optimise
-      const isMessageSentFromSelectedUser = newMessage.senderId === selectedUser._id;
+      const isMessageSentFromSelectedUser =
+        newMessage.senderId === selectedUser._id;
       if (!isMessageSentFromSelectedUser) return;
 
       set({
