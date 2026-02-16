@@ -23,7 +23,15 @@ const ChatContainer = () => {
   const [translatingId, setTranslatingId] = useState(null);
   const [openTranslateMenu, setOpenTranslateMenu] = useState(null);
 
-  const languages = ["English", "Bengali", "Hindi", "Japanese", "Spanish", "French", "German"];
+  const languages = [
+    "English",
+    "Bengali",
+    "Hindi",
+    "Japanese",
+    "Spanish",
+    "French",
+    "German",
+  ];
 
   const handleTranslate = async (messageId, text, lang) => {
     setOpenTranslateMenu(null);
@@ -47,7 +55,12 @@ const ChatContainer = () => {
     getMessages(selectedUser._id);
     subscribeToMessages();
     return () => unsubscribeFromMessages();
-  }, [selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
+  }, [
+    selectedUser._id,
+    getMessages,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  ]);
 
   if (isMessagesLoading) return <MessageSkeleton />;
 
@@ -60,9 +73,11 @@ const ChatContainer = () => {
           const isMe = message.senderId === authUser._id;
           const prevMessage = messages[index - 1];
           const nextMessage = messages[index + 1];
-          const isFirstOfGroup = !prevMessage || prevMessage.senderId !== message.senderId;
-          const isLastOfGroup = !nextMessage || nextMessage.senderId !== message.senderId;
-          
+          const isFirstOfGroup =
+            !prevMessage || prevMessage.senderId !== message.senderId;
+          const isLastOfGroup =
+            !nextMessage || nextMessage.senderId !== message.senderId;
+
           // Smart position: If message is in the first 3, open menu downwards
           const openDownwards = index < 3;
 
@@ -74,13 +89,20 @@ const ChatContainer = () => {
                 </span>
               )}
 
-              <div className={`flex w-full ${isMe ? "justify-end" : "justify-start"} items-center gap-2`}>
-                
+              <div
+                className={`flex w-full ${isMe ? "justify-end" : "justify-start"} items-center gap-2`}
+              >
                 {/* Left Side (For Sent Messages) */}
                 {isMe && message.text && (
                   <div className="relative">
                     <button
-                      onClick={() => setOpenTranslateMenu(openTranslateMenu === message._id ? null : message._id)}
+                      onClick={() =>
+                        setOpenTranslateMenu(
+                          openTranslateMenu === message._id
+                            ? null
+                            : message._id,
+                        )
+                      }
                       className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-gray-400 opacity-100"
                     >
                       {translatingId === message._id ? (
@@ -91,11 +113,15 @@ const ChatContainer = () => {
                     </button>
 
                     {openTranslateMenu === message._id && (
-                      <div className={`absolute ${openDownwards ? "top-8" : "bottom-8"} right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 p-1 w-32 animate-in fade-in zoom-in duration-200`}>
+                      <div
+                        className={`absolute ${openDownwards ? "top-8" : "bottom-8"} right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 p-1 w-32 animate-in fade-in zoom-in duration-200`}
+                      >
                         {languages.map((lang) => (
                           <button
                             key={lang}
-                            onClick={() => handleTranslate(message._id, message.text, lang)}
+                            onClick={() =>
+                              handleTranslate(message._id, message.text, lang)
+                            }
                             className="w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-blue-500 hover:text-white rounded-lg transition-colors"
                           >
                             {lang}
@@ -107,22 +133,37 @@ const ChatContainer = () => {
                 )}
 
                 {/* Bubble Container */}
-                <div className={`flex max-w-[75%] ${isMe ? "flex-row-reverse" : "flex-row"} items-end gap-2`}>
+                <div
+                  className={`flex max-w-[75%] ${isMe ? "flex-row-reverse" : "flex-row"} items-end gap-2`}
+                >
                   {!isMe && (
                     <div className="size-7 flex-shrink-0">
-                      {isLastInGroup ? (
-                        <img src={selectedUser.profilePic || "/avatar.png"} className="size-full rounded-full object-cover" alt="" />
+                      {isLastOfGroup ? (
+                        <img
+                          src={selectedUser.profilePic || "/avatar.png"}
+                          className="size-full rounded-full object-cover"
+                          alt=""
+                        />
                       ) : (
                         <div className="size-full" />
                       )}
                     </div>
                   )}
 
-                  <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
-                    <div className={`px-4 py-2 rounded-2xl text-[15px] shadow-sm relative leading-snug break-all whitespace-pre-wrap
+                  <div
+                    className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
+                  >
+                    <div
+                      className={`px-4 py-2 rounded-2xl text-[15px] shadow-sm relative leading-snug break-all whitespace-pre-wrap
                       ${isMe ? "bg-[#007AFF] text-white rounded-br-sm" : "bg-[#E9E9EB] dark:bg-[#3A3A3C] text-black dark:text-white rounded-bl-sm"}`}
                     >
-                      {message.image && <img src={message.image} className="max-w-[200px] rounded-lg mb-1" alt="" />}
+                      {message.image && (
+                        <img
+                          src={message.image}
+                          className="max-w-[200px] rounded-lg mb-1"
+                          alt=""
+                        />
+                      )}
                       {message.text && <p>{message.text}</p>}
                     </div>
                   </div>
@@ -132,7 +173,13 @@ const ChatContainer = () => {
                 {!isMe && message.text && (
                   <div className="relative">
                     <button
-                      onClick={() => setOpenTranslateMenu(openTranslateMenu === message._id ? null : message._id)}
+                      onClick={() =>
+                        setOpenTranslateMenu(
+                          openTranslateMenu === message._id
+                            ? null
+                            : message._id,
+                        )
+                      }
                       className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-gray-400 opacity-100"
                     >
                       {translatingId === message._id ? (
@@ -142,11 +189,15 @@ const ChatContainer = () => {
                       )}
                     </button>
                     {openTranslateMenu === message._id && (
-                      <div className={`absolute ${openDownwards ? "top-8" : "bottom-8"} left-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 p-1 w-32 animate-in fade-in zoom-in duration-200`}>
+                      <div
+                        className={`absolute ${openDownwards ? "top-8" : "bottom-8"} left-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 p-1 w-32 animate-in fade-in zoom-in duration-200`}
+                      >
                         {languages.map((lang) => (
                           <button
                             key={lang}
-                            onClick={() => handleTranslate(message._id, message.text, lang)}
+                            onClick={() =>
+                              handleTranslate(message._id, message.text, lang)
+                            }
                             className="w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-blue-500 hover:text-white rounded-lg transition-colors"
                           >
                             {lang}
