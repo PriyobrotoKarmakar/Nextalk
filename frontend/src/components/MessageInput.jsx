@@ -41,10 +41,14 @@ const MessageInput = () => {
     if (fileInputRef.current) fileInputRef.current.value = null;
   };
 
+  const [isSending, setIsSending] = useState(false);
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!text.trim() && !imagePreview) return;
+    if (isSending) return; // Prevent double send
 
+    setIsSending(true);
     try {
       await sendMessages({ text: text.trim(), image: imagePreview });
       setText("");
@@ -52,6 +56,8 @@ const MessageInput = () => {
       if (fileInputRef.current) fileInputRef.current.value = null;
     } catch {
       toast.error("Failed to send message.");
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -65,7 +71,7 @@ const MessageInput = () => {
               <button
                 key={tone}
                 onClick={() => handleRewrite(tone.toLowerCase())}
-                className="px-4 py-2 text-sm font-semibold text-left rounded-xl hover:bg-blue-500 hover:text-white transition-colors"
+                className="px-4 py-2 text-sm font-semibold text-left rounded-xl hover:bg-blue-500 hover:text-white transition-colors dark:text-gray-200 dark:hover:bg-blue-600 dark:hover:text-white"
               >
                 {tone}
               </button>
@@ -129,9 +135,9 @@ const MessageInput = () => {
           </button>
         </div>
 
-        <div className="flex-1 relative">
+        <div className="flex-1 relative rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-[#1C1C1E]">
           <textarea
-            className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-[#1C1C1E] px-4 py-3 text-[15px] focus:outline-none focus:border-blue-300 transition-all dark:text-white resize-none max-h-32 overflow-y-auto custom-scrollbar"
+            className="w-full bg-transparent px-4 py-3 text-[15px] focus:outline-none transition-all dark:text-white resize-none max-h-32 overflow-y-auto custom-scrollbar block"
             placeholder={isRewriting ? "AI is thinking..." : "iMessage"}
             value={text}
             onChange={(e) => {
@@ -147,7 +153,7 @@ const MessageInput = () => {
               }
             }}
             rows={1}
-            disabled={isRewriting}
+            disabled={isRewriting || isSending}
             style={{ minHeight: "2.5rem" }}
           />
         </div>
@@ -155,14 +161,18 @@ const MessageInput = () => {
         <div className="pb-3">
           <button
             type="submit"
-            disabled={!text.trim() && !imagePreview}
+            disabled={(!text.trim() && !imagePreview) || isSending}
             className={`size-8 flex items-center justify-center rounded-full transition-all duration-200 ${
               !text.trim() && !imagePreview
                 ? "bg-gray-200 text-gray-400 scale-90 dark:bg-gray-800"
                 : "bg-[#007AFF] text-white shadow-md scale-100"
-            }`}
+            } ${isSending ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            <Send size={16} strokeWidth={2.5} className="ml-0.5" />
+            {isSending ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Send size={16} strokeWidth={2.5} className="ml-0.5" />
+            )}
           </button>
         </div>
       </form>

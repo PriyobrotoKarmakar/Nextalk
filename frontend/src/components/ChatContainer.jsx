@@ -122,7 +122,7 @@ const ChatContainer = () => {
                             onClick={() =>
                               handleTranslate(message._id, message.text, lang)
                             }
-                            className="w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-blue-500 hover:text-white rounded-lg transition-colors"
+                            className="w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-blue-500 hover:text-white rounded-lg transition-colors dark:text-gray-200 dark:hover:bg-blue-600 dark:hover:text-white"
                           >
                             {lang}
                           </button>
@@ -198,7 +198,7 @@ const ChatContainer = () => {
                             onClick={() =>
                               handleTranslate(message._id, message.text, lang)
                             }
-                            className="w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-blue-500 hover:text-white rounded-lg transition-colors"
+                            className="w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-blue-500 hover:text-white rounded-lg transition-colors dark:text-gray-200 dark:hover:bg-blue-600 dark:hover:text-white"
                           >
                             {lang}
                           </button>
